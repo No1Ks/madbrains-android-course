@@ -18,7 +18,8 @@
         android:inputType="textPassword"
         app:layout_constraintBottom_toTopOf="@+id/buttonEnterId"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:importantForAutofill="no" />
 
     <EditText
         android:id="@+id/editTextNameId"
@@ -32,7 +33,8 @@
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/editTextPasswordId"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:importantForAutofill="no" />
 
     <Button
         android:id="@+id/buttonEnterId"
@@ -60,7 +62,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:contentDescription="@string/LogoDescription"
         android:src="@mipmap/logo"
         app:layout_constraintBottom_toTopOf="@+id/textView"
