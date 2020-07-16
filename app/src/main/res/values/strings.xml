@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">MadbrainsAndroidCourse</string>
+
+    <!-- Login Screen -->
+    <string name="NameField">Name</string>
+    <string name="PasswordField">Password</string>
+    <string name="EnterButtonText">Enter</string>
+    <string name="LoginText">Enter your GitHub account credentials</string>
+    <string name="LogoDescription">app logo</string>
 </resources>
