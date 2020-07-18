@@ -3,7 +3,9 @@ package com.no1ks.madbrains_android_course
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.toolbox.Volley
+import kotlinx.android.synthetic.main.activity_repositories.*
 
 class RepositoriesActivity : AppCompatActivity(), RepositoriesLoader.ResponseListener {
     private val repositoriesLoader = RepositoriesLoader()
@@ -11,7 +13,6 @@ class RepositoriesActivity : AppCompatActivity(), RepositoriesLoader.ResponseLis
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_repositories)
-
         setupActionBar()
 
         val queue = Volley.newRequestQueue(this)
@@ -29,15 +30,23 @@ class RepositoriesActivity : AppCompatActivity(), RepositoriesLoader.ResponseLis
         }
     }
 
+    fun setList(repositories: List<Repository>) {
+        val adapter = RepositoryAdapter(repositories)
+        recyclerRepositoriesId.adapter = adapter
+        val layoutManager = LinearLayoutManager(this)
+        recyclerRepositoriesId.layoutManager = layoutManager
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
     }
 
-    // interface methods
+    // interface methods implementation
     override fun onResponseReady() {
         Toast.makeText(this, repositoriesLoader.queueResult, Toast.LENGTH_SHORT).show()
         // TODO show repositories
+        setList(repositoriesLoader.repositories)
     }
 
     override fun onResponseFailed() {

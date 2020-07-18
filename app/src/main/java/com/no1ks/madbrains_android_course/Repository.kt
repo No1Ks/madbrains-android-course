@@ -33,7 +33,7 @@ open class Repository : RealmObject() {
     lateinit var forks_url: String
     lateinit var keys_url: String
     lateinit var collaborators_url: String
-    lateinit var teamsurl: String
+    lateinit var teams_url: String
     lateinit var hooks_url: String
     lateinit var issue_events_url: String
     lateinit var events_url: String
