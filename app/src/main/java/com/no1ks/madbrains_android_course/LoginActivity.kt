@@ -15,26 +15,23 @@ class LoginActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.buttonEnterId).setOnClickListener {
             if (checkLogin()) {
-                // TODO save credentials for further login
-
+                LoggedUser.username = editTextNameId.text.toString()
+                LoggedUser.password = editTextPasswordId.text.toString()
                 openRepositoriesActivity(this)
+            } else {
+                Toast.makeText(this, "Fill up all fields", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun checkLogin(): Boolean {
-        // TODO check here
         val name: String = editTextNameId.text.toString()
         val pass: String = editTextPasswordId.text.toString()
-//        if (name.isNotEmpty() && pass.isNotEmpty()) {
-//            // TODO try to login
-//            // TODO on success save this as current user credentials
-//            return true
-//        } else {
-//            Toast.makeText(this, "Fill up credentials first", Toast.LENGTH_SHORT).show()
-//        }
-//        return false
-        return true
+        if (name.isNotEmpty() && pass.isNotEmpty()) {
+            // in a perfect world I should check whether credentials are correct. but not today
+            return true
+        }
+        return false
     }
 
     private fun openRepositoriesActivity(context: Context) {

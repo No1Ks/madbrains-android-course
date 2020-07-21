@@ -5,8 +5,11 @@
     <string name="NameField">Name</string>
     <string name="PasswordField">Password</string>
     <string name="EnterButtonText">Enter</string>
-    <string name="LoginText">Enter your GitHub account credentials</string>
+    <string name="LoginText">Login into your GitHub account</string>
     <string name="LogoDescription">app logo</string>
+    <string name="title_activity_repositories">RepositoriesActivity</string>
+    <string name="tab_all">All</string>
+    <string name="tab_favourite">Favourite</string>
 
     <!-- Repositories screen -->
 

@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.activity_login.view.*
+import com.bumptech.glide.request.RequestOptions
 
 class RepositoryAdapter(private val repositories: List<Repository>) : RecyclerView.Adapter<RepositoryViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepositoryViewHolder {
@@ -29,10 +29,19 @@ class RepositoryAdapter(private val repositories: List<Repository>) : RecyclerVi
 class RepositoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val descriptionField: TextView = itemView.findViewById(R.id.repositoryDescriptionId)
     private val nameField: TextView = itemView.findViewById(R.id.repositoryNameId)
-    private val imageView: ImageView = itemView.findViewById(R.id.repositoryImageId)
+    private val authorAvatar: ImageView = itemView.findViewById(R.id.authorAvatarId)
+    private val authorName: TextView = itemView.findViewById(R.id.authorNameId)
+    private val forksField: TextView = itemView.findViewById(R.id.forksNumberId)
+    private val starsField: TextView = itemView.findViewById(R.id.starsNumberId)
+    private val languageField: TextView = itemView.findViewById(R.id.languageId)
+
     fun bind (repository: Repository) {
         descriptionField.text = repository.description
         nameField.text = repository.name
-        Glide.with(itemView).load(repository.owner_avatar_url).into(imageView)
+        starsField.text = repository.starsNumber.toString()
+        forksField.text = repository.forksNumber.toString()
+        authorName.text = repository.owner_login
+        languageField.text = repository.language
+        Glide.with(itemView).load(repository.owner_avatar_url).apply(RequestOptions.circleCropTransform()).into(authorAvatar)
     }
 }

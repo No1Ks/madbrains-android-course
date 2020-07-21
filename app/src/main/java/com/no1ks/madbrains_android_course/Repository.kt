@@ -66,4 +66,8 @@ open class Repository : RealmObject() {
     lateinit var labels_url: String
     lateinit var releases_url: String
     lateinit var deployments_url: String
+
+    var starsNumber: Int = 0
+    var forksNumber: Int = 0
+    var language: String = ""
 }

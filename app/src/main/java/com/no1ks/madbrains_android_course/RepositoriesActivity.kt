@@ -4,8 +4,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
 import com.android.volley.toolbox.Volley
-import kotlinx.android.synthetic.main.activity_repositories.*
+import com.google.android.material.tabs.TabLayout
+import com.no1ks.madbrains_android_course.ui.main.SectionsPagerAdapter
 
 class RepositoriesActivity : AppCompatActivity(), RepositoriesLoader.ResponseListener {
     private val repositoriesLoader = RepositoriesLoader()
@@ -13,13 +16,16 @@ class RepositoriesActivity : AppCompatActivity(), RepositoriesLoader.ResponseLis
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_repositories)
+        val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
+        val viewPager: ViewPager = findViewById(R.id.view_pager)
+        viewPager.adapter = sectionsPagerAdapter
+        val tabs: TabLayout = findViewById(R.id.tabs)
+        tabs.setupWithViewPager(viewPager)
         setupActionBar()
 
         val queue = Volley.newRequestQueue(this)
         repositoriesLoader.setCustomListener(this)
         repositoriesLoader.loadRepositoriesFromNetwork(queue)
-        // From this point Activity will wait for response.
-        // When callback comes onResponseReady() fires or onResponseFailed()
     }
 
     private fun setupActionBar() {
@@ -32,9 +38,10 @@ class RepositoriesActivity : AppCompatActivity(), RepositoriesLoader.ResponseLis
 
     fun setList(repositories: List<Repository>) {
         val adapter = RepositoryAdapter(repositories)
-        recyclerRepositoriesId.adapter = adapter
+        val recycler = findViewById<RecyclerView>(R.id.recyclerRepositoriesId)
+        recycler.adapter = adapter
         val layoutManager = LinearLayoutManager(this)
-        recyclerRepositoriesId.layoutManager = layoutManager
+        recycler.layoutManager = layoutManager
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -44,14 +51,12 @@ class RepositoriesActivity : AppCompatActivity(), RepositoriesLoader.ResponseLis
 
     // interface methods implementation
     override fun onResponseReady() {
-        Toast.makeText(this, repositoriesLoader.queueResult, Toast.LENGTH_SHORT).show()
-        // TODO show repositories
         setList(repositoriesLoader.repositories)
     }
 
     override fun onResponseFailed() {
         Toast.makeText(this,
-            "Failed to download repositories: \n"
-                    + repositoriesLoader.queueResult, Toast.LENGTH_SHORT).show()
+            "Failed to download repositories: \n${repositoriesLoader.queueResult}",
+            Toast.LENGTH_SHORT).show()
     }
 }
