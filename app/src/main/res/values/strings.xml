@@ -8,8 +8,11 @@
     <string name="LoginText">Login into your GitHub account</string>
     <string name="LogoDescription">app logo</string>
     <string name="title_activity_repositories">RepositoriesActivity</string>
-    <string name="tab_all">All</string>
+    <string name="tab_all">Repositories</string>
     <string name="tab_favourite">Favourite</string>
+
+    <!-- Loading screen -->
+    <string name="LoadingText">Loading repositories..</string>
 
     <!-- Repositories screen -->
 

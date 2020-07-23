@@ -1,4 +1,4 @@
-package com.no1ks.madbrains_android_course
+package com.no1ks.madbrains_android_course.ui
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,13 +8,17 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.no1ks.madbrains_android_course.R
+import com.no1ks.madbrains_android_course.Repository
 
 class RepositoryAdapter(private val repositories: List<Repository>) : RecyclerView.Adapter<RepositoryViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepositoryViewHolder {
         val rootView = LayoutInflater
             .from(parent.context)
             .inflate(R.layout.repository_view_layout, parent, false)
-        return RepositoryViewHolder(rootView)
+        return RepositoryViewHolder(
+            rootView
+        )
     }
 
     override fun getItemCount(): Int {

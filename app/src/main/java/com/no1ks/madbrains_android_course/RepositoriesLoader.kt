@@ -6,13 +6,15 @@ import com.android.volley.Response
 import org.json.JSONArray
 import org.json.JSONObject
 
-class RepositoriesLoader {
+object RepositoriesLoader {
     private var mListener: ResponseListener? = null
     private val repositoriesUrl = "https://api.github.com/repositories"
     private val repositoriesDetailsUrl = "https://api.github.com/repos/"
 
     var queueResult: String = "success"
     val repositories: MutableList<Repository> = mutableListOf()
+
+    var numberOfRequestQueued: Int = 0
 
     // This interface allows triggering Activity when response downloaded
     interface ResponseListener {
@@ -31,6 +33,7 @@ class RepositoriesLoader {
             Response.Listener { response ->
                 repositories.clear()
                 parseJsonRepositoriesList(response)
+                numberOfRequestQueued = repositories.count()
                 for (repository in repositories) {
                     loadRepositoryDetailsFromNetwork(
                         queue,
@@ -57,6 +60,7 @@ class RepositoriesLoader {
                 repository.forksNumber = jsonObject.getInt("forks")
                 repository.language = jsonObject.getString("language")
                 repository.starsNumber = jsonObject.getInt("stargazers_count")
+                --numberOfRequestQueued
                 mListener?.onResponseReady()
             },
             Response.ErrorListener { error ->

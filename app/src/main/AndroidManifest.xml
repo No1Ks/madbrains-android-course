@@ -12,17 +12,21 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".RepositoriesActivity"
-            android:label="@string/title_activity_repositories"
-            android:theme="@style/AppTheme"/>
-        <activity
-            android:name=".LoginActivity"
+            android:name=".ui.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.LoadingActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleInstance"/>
+        <activity
+            android:name=".ui.RepositoriesActivity"
+            android:label="@string/title_activity_repositories"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

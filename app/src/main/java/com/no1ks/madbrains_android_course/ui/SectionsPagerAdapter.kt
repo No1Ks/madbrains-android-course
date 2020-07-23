@@ -1,4 +1,4 @@
-package com.no1ks.madbrains_android_course.ui.main
+package com.no1ks.madbrains_android_course.ui
 
 import android.content.Context
 import androidx.fragment.app.Fragment
@@ -19,9 +19,14 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
     FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
-        // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
-        return PlaceholderFragment.newInstance(position + 1)
+        var fragment: Fragment = Fragment()
+        when (position) {
+            0 -> fragment =
+                RepositoriesFragment()
+            1 -> fragment =
+                FavouriteFragment()
+        }
+        return fragment
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
@@ -29,7 +34,6 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
     }
 
     override fun getCount(): Int {
-        // Show 2 total pages.
         return 2
     }
 }

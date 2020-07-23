@@ -1,4 +1,4 @@
-package com.no1ks.madbrains_android_course
+package com.no1ks.madbrains_android_course.ui
 
 import android.content.Context
 import android.content.Intent
@@ -6,12 +6,19 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
+import com.no1ks.madbrains_android_course.LoggedUser
+import com.no1ks.madbrains_android_course.R
 import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        // !!!!!
+        editTextNameId.setText("no1ks")
+        editTextPasswordId.setText("6790825Saw")
+        // !!!!!
 
         findViewById<Button>(R.id.buttonEnterId).setOnClickListener {
             if (checkLogin()) {
