@@ -21,14 +21,15 @@ import com.no1ks.madbrains_android_course.ui.adapter.FragmentsPagerAdapter
 import com.no1ks.madbrains_android_course.ui.adapter.RepositoryAdapter
 import com.no1ks.madbrains_android_course.ui.adapter.SimpleItemTouchHelperCallback
 
-private val TAB_TITLES = arrayOf(
-    R.string.tab_all,
-    R.string.tab_favourite
-)
 
 class RepositoriesActivity : AppCompatActivity(),
     RepositoriesLoader.ResponseListener,
     RepositoryAdapter.RepositoryListChangesListener {
+
+    private val TAB_TITLES = arrayOf(
+        R.string.tab_all,
+        R.string.tab_favourite
+    )
 
     private var mRepositoriesAdapter = RepositoryAdapter()
     private var mFavourireRepositoriesAdapter = RepositoryAdapter()

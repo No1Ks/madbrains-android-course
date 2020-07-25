@@ -8,6 +8,7 @@
     <string name="login_text">Login into your GitHub account</string>
     <string name="logo_description">app logo</string>
     <string name="title_activity_repositories">RepositoriesActivity</string>
+    <string name="remember_me">Remember me</string>
 
     <!-- Repositories screen -->
     <string name="logout">Logout</string>
