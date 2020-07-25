@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">MadbrainsAndroidCourse</string>
 
-    <string name="broadcast_close_loading_screen">closeLoadingScreen</string>
-
     <!-- Login screen -->
     <string name="name_field">Name</string>
     <string name="password_field">Password</string>
@@ -11,11 +9,9 @@
     <string name="logo_description">app logo</string>
     <string name="title_activity_repositories">RepositoriesActivity</string>
 
-    <!-- Loading screen -->
-    <string name="loading_text">Loading repositories..</string>
-
     <!-- Repositories screen -->
     <string name="logout">Logout</string>
+    <string name="loading">Loading. Please wait</string>
     <string name="tab_all">Repositories</string>
     <string name="tab_favourite">Favourite</string>
     <string name="swipe_info">swipe right to add to favourite</string>

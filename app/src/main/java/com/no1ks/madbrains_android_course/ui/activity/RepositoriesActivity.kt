@@ -7,11 +7,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager2.widget.ViewPager2
 import com.android.volley.toolbox.Volley
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.no1ks.madbrains_android_course.*
+import com.no1ks.madbrains_android_course.LoggedUser
+import com.no1ks.madbrains_android_course.R
+import com.no1ks.madbrains_android_course.RealmInterface
+import com.no1ks.madbrains_android_course.RepositoriesLoader
 import com.no1ks.madbrains_android_course.entity.Repository
 import com.no1ks.madbrains_android_course.ui.adapter.FragmentsPagerAdapter
 import com.no1ks.madbrains_android_course.ui.adapter.RepositoryAdapter
@@ -29,6 +33,8 @@ class RepositoriesActivity : AppCompatActivity(),
     private var mRepositoriesAdapter = RepositoryAdapter()
     private var mFavourireRepositoriesAdapter = RepositoryAdapter()
 
+    private lateinit var pullToRefresh: SwipeRefreshLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_repositories)
@@ -40,24 +46,33 @@ class RepositoriesActivity : AppCompatActivity(),
         mFavourireRepositoriesAdapter.setCustomListener(this)
 
         setupViewPagerWithTabLayout()
-        setupActionBar()
+        setupPullToRefresh()
         loadRepositories()
+        setupActionBarLoading()
+
+        Toast.makeText(this, getString(R.string.swipe_info), Toast.LENGTH_LONG).show()
     }
 
-    private fun startLoadingScreen() {
-        val intent = Intent(this, LoadingActivity::class.java)
-        this.startActivity(intent)
+    private fun setupPullToRefresh() {
+        pullToRefresh = findViewById<SwipeRefreshLayout>(R.id.pullToRefresh)
+        pullToRefresh.setOnRefreshListener {
+            loadRepositories()
+        }
     }
 
-    private fun finishLoadingScreen() {
-        sendBroadcast(Intent(getString(R.string.broadcast_close_loading_screen)))
-    }
-
-    private fun setupActionBar() {
+    private fun setupActionBarLogout() {
         supportActionBar?.apply {
             setDisplayShowHomeEnabled(true)
             setDisplayHomeAsUpEnabled(true)
             title = getString(R.string.logout)
+        }
+    }
+
+    private fun setupActionBarLoading() {
+        supportActionBar?.apply {
+            setDisplayShowHomeEnabled(false)
+            setDisplayHomeAsUpEnabled(false)
+            title = getString(R.string.loading)
         }
     }
 
@@ -75,9 +90,14 @@ class RepositoriesActivity : AppCompatActivity(),
     }
 
     private fun loadRepositories() {
+        setupActionBarLoading()
+        mRepositoriesAdapter.repositories.clear()
+        mFavourireRepositoriesAdapter.repositories.clear()
+        mRepositoriesAdapter.notifyDataSetChanged()
+        mFavourireRepositoriesAdapter.notifyDataSetChanged()
         val queue = Volley.newRequestQueue(this)
         RepositoriesLoader.setCustomListener(this)
-        startLoadingScreen()
+        pullToRefresh.isRefreshing = true
         RepositoriesLoader.loadRepositoriesFromNetwork(queue)
     }
 
@@ -116,7 +136,6 @@ class RepositoriesActivity : AppCompatActivity(),
         mRepositoriesAdapter.notifyDataSetChanged()
         mFavourireRepositoriesAdapter.notifyDataSetChanged()
         sortRepositories()
-        Toast.makeText(this, getString(R.string.swipe_info), Toast.LENGTH_SHORT).show()
     }
 
     private fun sortRepositories() {
@@ -132,16 +151,18 @@ class RepositoriesActivity : AppCompatActivity(),
     override fun onResponseReady() {
         if (RepositoriesLoader.numberOfRequestsQueued <= 0) {
             showRepositoriesList(RepositoriesLoader.repositories)
-            finishLoadingScreen()
+            pullToRefresh.isRefreshing = false
+            setupActionBarLogout()
         }
     }
 
     override fun onResponseFailed() {
         Toast.makeText(this,
-            "Failed to download repositories: \n${RepositoriesLoader.queueResult}",
-            Toast.LENGTH_SHORT).show()
-        finishLoadingScreen()
-        finish()
+            "Failed to download repositories: \n${RepositoriesLoader.queueResult}\n Only favourite available",
+            Toast.LENGTH_LONG).show()
+        showRepositoriesList(RepositoriesLoader.repositories)
+        pullToRefresh.isRefreshing = false
+        setupActionBarLogout()
     }
 
     override fun onRepositoryFavourited(repo: Repository) {

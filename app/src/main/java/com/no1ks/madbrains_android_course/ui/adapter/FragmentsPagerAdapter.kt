@@ -23,7 +23,5 @@ class FragmentsPagerAdapter(
         return fragment
     }
 
-    override fun getItemCount(): Int {
-        return 2
-    }
+    override fun getItemCount(): Int = 2
 }

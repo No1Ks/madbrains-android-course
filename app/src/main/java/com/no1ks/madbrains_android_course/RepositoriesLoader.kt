@@ -30,11 +30,11 @@ object RepositoriesLoader {
     }
 
     fun loadRepositoriesFromNetwork(queue: RequestQueue) {
+        repositories.clear()
         val stringRequest = StringRequestWithAuth(
             Request.Method.GET,
             mRepositoriesUrl,
             Response.Listener { response ->
-                repositories.clear()
                 parseJsonRepositoriesList(response)
                 numberOfRequestsQueued = repositories.count()
                 for (repository in repositories) {
