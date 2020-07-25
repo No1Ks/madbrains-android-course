@@ -1,26 +1,29 @@
 package com.no1ks.madbrains_android_course
 
+import android.util.Base64
+import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.no1ks.madbrains_android_course.entity.Repository
 import org.json.JSONArray
 import org.json.JSONObject
 
 object RepositoriesLoader {
-    private var mListener: ResponseListener? = null
-    private val repositoriesUrl = "https://api.github.com/repositories"
-    private val repositoriesDetailsUrl = "https://api.github.com/repos/"
+    private const val mRepositoriesUrl = "https://api.github.com/repositories"
+    private const val mRepositoriesDetailsUrl = "https://api.github.com/repos/"
 
     var queueResult: String = "success"
+    var numberOfRequestsQueued: Int = 0
+
     val repositories: MutableList<Repository> = mutableListOf()
 
-    var numberOfRequestQueued: Int = 0
-
-    // This interface allows triggering Activity when response downloaded
     interface ResponseListener {
         fun onResponseReady()
         fun onResponseFailed()
     }
+    private var mListener: ResponseListener? = null
 
     fun setCustomListener(listener: ResponseListener?) {
         mListener = listener
@@ -29,15 +32,15 @@ object RepositoriesLoader {
     fun loadRepositoriesFromNetwork(queue: RequestQueue) {
         val stringRequest = StringRequestWithAuth(
             Request.Method.GET,
-            repositoriesUrl,
+            mRepositoriesUrl,
             Response.Listener { response ->
                 repositories.clear()
                 parseJsonRepositoriesList(response)
-                numberOfRequestQueued = repositories.count()
+                numberOfRequestsQueued = repositories.count()
                 for (repository in repositories) {
                     loadRepositoryDetailsFromNetwork(
                         queue,
-                        repositoriesDetailsUrl + repository.full_name,
+                        mRepositoriesDetailsUrl + repository.full_name,
                         repository
                     )
                 }
@@ -51,6 +54,21 @@ object RepositoriesLoader {
         queue.add(stringRequest)
     }
 
+    class StringRequestWithAuth(
+        method: Int, url: String?, listener: Response.Listener<String?>?,
+        errorListener: Response.ErrorListener?
+    ) : StringRequest(method, url, listener, errorListener) {
+
+        @Throws(AuthFailureError::class)
+        override fun getHeaders(): Map<String, String> {
+            val headers: MutableMap<String, String> = HashMap()
+            val credentials = "${LoggedUser.username}:${LoggedUser.password}"
+            val auth = ("Basic " + Base64.encodeToString(credentials.toByteArray(), Base64.NO_WRAP))
+            headers["Authorization"] = auth
+            return headers
+        }
+    }
+
     private fun loadRepositoryDetailsFromNetwork(queue: RequestQueue, url: String, repository: Repository) {
         val stringRequest = StringRequestWithAuth(
             Request.Method.GET,
@@ -60,7 +78,7 @@ object RepositoriesLoader {
                 repository.forksNumber = jsonObject.getInt("forks")
                 repository.language = jsonObject.getString("language")
                 repository.starsNumber = jsonObject.getInt("stargazers_count")
-                --numberOfRequestQueued
+                --numberOfRequestsQueued
                 mListener?.onResponseReady()
             },
             Response.ErrorListener { error ->
@@ -75,7 +93,8 @@ object RepositoriesLoader {
         val jsonArray = JSONArray(responseText)
         for (index in 0 until jsonArray.length()) {
             val jsonObject = jsonArray.getJSONObject(index)
-            val repository = Repository()
+            val repository =
+                Repository()
             repository.id = jsonObject.getInt("id")
             repository.node_id = jsonObject.getString("node_id")
             repository.name = jsonObject.getString("name")

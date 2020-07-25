@@ -1,11 +1,13 @@
-package com.no1ks.madbrains_android_course
+package com.no1ks.madbrains_android_course.entity
 
 import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
 
 open class Repository : RealmObject() {
     var          id: Int = 0
     lateinit var node_id: String
     lateinit var name: String
+    @PrimaryKey
     lateinit var full_name: String
     var          private: Boolean = false
     lateinit var owner_login: String

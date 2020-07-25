@@ -1,4 +1,4 @@
-package com.no1ks.madbrains_android_course.ui
+package com.no1ks.madbrains_android_course.ui.activity
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -12,7 +12,7 @@ class LoadingActivity : AppCompatActivity() {
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(arg0: Context, intent: Intent) {
             val action = intent.action
-            if (action == "closeLoadingScreen") {
+            if (action == getString(R.string.broadcast_close_loading_screen)) {
                 finish()
             }
         }
@@ -21,7 +21,7 @@ class LoadingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loading)
-        registerReceiver(broadcastReceiver, IntentFilter("closeLoadingScreen"))
+        registerReceiver(broadcastReceiver, IntentFilter(getString(R.string.broadcast_close_loading_screen)))
     }
 
     override fun onDestroy() {

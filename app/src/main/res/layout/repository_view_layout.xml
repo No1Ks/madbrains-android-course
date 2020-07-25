@@ -15,8 +15,7 @@
         android:orientation="horizontal"
         android:paddingBottom="10dp"
         app:layout_constraintBottom_toTopOf="@+id/authorInfoLayout"
-        app:layout_constraintEnd_toStartOf="@+id/favoreRepositoryId"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
@@ -39,27 +38,19 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/favoreRepositoryId"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_weight="1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_save" />
-
     <LinearLayout
         android:id="@+id/repositoryStatsLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="left|center_vertical"
+        android:gravity="start|center_vertical"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="@+id/authorInfoLayout"
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
-            android:id="@+id/imageView4"
+            android:id="@+id/imageForks"
+            tools:ignore="ContentDescription"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_weight="1"
@@ -71,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="left" />
+            android:gravity="start" />
 
         <Space
             android:layout_width="20dp"
@@ -79,7 +70,8 @@
             android:layout_weight="1" />
 
         <ImageView
-            android:id="@+id/imageView3"
+            android:id="@+id/imageStars"
+            tools:ignore="ContentDescription"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_weight="1"
@@ -90,7 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="left" />
+            android:gravity="start" />
 
     </LinearLayout>
 
@@ -111,18 +103,18 @@
 
         <TextView
             android:id="@+id/authorNameId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:fontFamily="sans-serif"
-            android:gravity="right" />
+            android:gravity="end" />
 
         <ImageView
             android:id="@+id/authorAvatarId"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:contentDescription="TODO"
             android:visibility="visible"
+            tools:ignore="ContentDescription"
             tools:srcCompat="@tools:sample/avatars" />
 
     </LinearLayout>

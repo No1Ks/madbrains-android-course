@@ -1,4 +1,4 @@
-package com.no1ks.madbrains_android_course.ui
+package com.no1ks.madbrains_android_course.ui.activity
 
 import android.content.Context
 import android.content.Intent
@@ -14,11 +14,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
-        // !!!!!
-        editTextNameId.setText("no1ks")
-        editTextPasswordId.setText("6790825Saw")
-        // !!!!!
 
         findViewById<Button>(R.id.buttonEnterId).setOnClickListener {
             if (checkLogin()) {
@@ -42,7 +37,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun openRepositoriesActivity(context: Context) {
-        val intent: Intent = Intent(context, RepositoriesActivity::class.java)
+        val intent = Intent(context, RepositoriesActivity::class.java)
         context.startActivity(intent)
     }
 }

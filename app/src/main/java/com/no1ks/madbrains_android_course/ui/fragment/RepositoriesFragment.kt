@@ -1,4 +1,4 @@
-package com.no1ks.madbrains_android_course.ui
+package com.no1ks.madbrains_android_course.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
