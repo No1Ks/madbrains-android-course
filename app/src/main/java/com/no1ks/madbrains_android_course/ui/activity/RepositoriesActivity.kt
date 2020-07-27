@@ -1,6 +1,5 @@
 package com.no1ks.madbrains_android_course.ui.activity
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -21,7 +20,6 @@ import com.no1ks.madbrains_android_course.ui.adapter.FragmentsPagerAdapter
 import com.no1ks.madbrains_android_course.ui.adapter.RepositoryAdapter
 import com.no1ks.madbrains_android_course.ui.adapter.SimpleItemTouchHelperCallback
 
-
 class RepositoriesActivity : AppCompatActivity(),
     RepositoriesLoader.ResponseListener,
     RepositoryAdapter.RepositoryListChangesListener {
@@ -31,8 +29,8 @@ class RepositoriesActivity : AppCompatActivity(),
         R.string.tab_favourite
     )
 
-    private var mRepositoriesAdapter = RepositoryAdapter()
-    private var mFavourireRepositoriesAdapter = RepositoryAdapter()
+    private var mRepositoriesAdapter = RepositoryAdapter(this)
+    private var mFavourireRepositoriesAdapter = RepositoryAdapter(this)
 
     private lateinit var pullToRefresh: SwipeRefreshLayout
 
@@ -54,8 +52,13 @@ class RepositoriesActivity : AppCompatActivity(),
         Toast.makeText(this, getString(R.string.swipe_info), Toast.LENGTH_LONG).show()
     }
 
+    override fun onRestart() {
+        super.onRestart()
+        showRepositoriesList(RepositoriesLoader.repositories)
+    }
+
     private fun setupPullToRefresh() {
-        pullToRefresh = findViewById<SwipeRefreshLayout>(R.id.pullToRefresh)
+        pullToRefresh = findViewById(R.id.pullToRefresh)
         pullToRefresh.setOnRefreshListener {
             loadRepositories()
         }
@@ -104,7 +107,7 @@ class RepositoriesActivity : AppCompatActivity(),
 
     private fun showRepositoriesList(repositories: MutableList<Repository>) {
         // all repositories
-        mRepositoriesAdapter.repositories = repositories
+        mRepositoriesAdapter.repositories = repositories.toMutableList()
         val recycler = findViewById<RecyclerView>(R.id.recyclerRepositoriesId)
         recycler.adapter = mRepositoriesAdapter
         recycler.layoutManager = LinearLayoutManager(this)
@@ -117,6 +120,7 @@ class RepositoriesActivity : AppCompatActivity(),
         touchHelper.attachToRecyclerView(recycler)
 
         // favourite
+        mFavourireRepositoriesAdapter.repositories.clear()
         val recyclerFavourite = findViewById<RecyclerView>(R.id.recyclerFavouriteRepositoriesId)
         recyclerFavourite.adapter = mFavourireRepositoriesAdapter
         recyclerFavourite.layoutManager = LinearLayoutManager(this)
@@ -133,6 +137,7 @@ class RepositoriesActivity : AppCompatActivity(),
         for (repo in favourites) {
             mRepositoriesAdapter.repositories.removeAll { r -> r.full_name == repo.full_name }
             mFavourireRepositoriesAdapter.repositories.add(repo)
+            RepositoriesLoader.repositories.find { r -> r.full_name == repo.full_name } ?.isFavourite  = true
         }
         mRepositoriesAdapter.notifyDataSetChanged()
         mFavourireRepositoriesAdapter.notifyDataSetChanged()
@@ -162,6 +167,7 @@ class RepositoriesActivity : AppCompatActivity(),
             "Failed to download repositories: \n${RepositoriesLoader.queueResult}\n Only favourite available",
             Toast.LENGTH_LONG).show()
         showRepositoriesList(RepositoriesLoader.repositories)
+        RepositoriesLoader.repositories = RealmInterface.favouriteRepositoriesOf(LoggedUser.username).toMutableList()
         pullToRefresh.isRefreshing = false
         setupActionBarLogout()
     }
@@ -169,6 +175,7 @@ class RepositoriesActivity : AppCompatActivity(),
     override fun onRepositoryFavourited(repo: Repository) {
         mRepositoriesAdapter.repositories.removeAll { r -> r.full_name == repo.full_name }
         mFavourireRepositoriesAdapter.repositories.add(repo)
+        RepositoriesLoader.repositories.find { r -> r.full_name == repo.full_name } ?.isFavourite  = true
         RealmInterface.addRepositoryToFavourite(LoggedUser.username, repo)
         sortRepositories()
         mRepositoriesAdapter.notifyDataSetChanged()
@@ -179,6 +186,7 @@ class RepositoriesActivity : AppCompatActivity(),
     override fun onRepositoryUnfavourited(repo: Repository) {
         mFavourireRepositoriesAdapter.repositories.removeAll { r -> r.full_name == repo.full_name }
         mRepositoriesAdapter.repositories.add(repo)
+        RepositoriesLoader.repositories.find { r -> r.full_name == repo.full_name } ?.isFavourite  = false
         RealmInterface.removeRepositoryFromFavourite(LoggedUser.username, repo)
         sortRepositories()
         mRepositoriesAdapter.notifyDataSetChanged()

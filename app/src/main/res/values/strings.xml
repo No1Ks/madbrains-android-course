@@ -18,5 +18,11 @@
     <string name="swipe_info">swipe right to add to favourite</string>
 
     <!-- RepositoriesDetails screen -->
+    <string name="add_to_favourite">Add to favourite</string>
+    <string name="remove_from_favourite">Remove from favourite</string>
+    <string name="back">Back</string>
+    <string name="repository_full_name">repository_full_name</string>
+    <string name="last_ten_commits">Last commits:</string>
+    <string name="url">Url: </string>
 
 </resources>

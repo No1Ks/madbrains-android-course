@@ -1,10 +1,13 @@
 package com.no1ks.madbrains_android_course.ui.adapter
 
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -12,8 +15,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.no1ks.madbrains_android_course.R
 import com.no1ks.madbrains_android_course.entity.Repository
+import com.no1ks.madbrains_android_course.ui.activity.DetailsActivity
 
-class RepositoryAdapter()
+class RepositoryAdapter(val context: Context)
     : RecyclerView.Adapter<RepositoryViewHolder>()
     , ItemTouchHelperAdapter {
 
@@ -33,9 +37,7 @@ class RepositoryAdapter()
         val rootView = LayoutInflater
             .from(parent.context)
             .inflate(R.layout.repository_view_layout, parent, false)
-        return RepositoryViewHolder(
-            rootView
-        )
+        return RepositoryViewHolder(rootView)
     }
 
     override fun getItemCount(): Int {
@@ -43,7 +45,13 @@ class RepositoryAdapter()
     }
 
     override fun onBindViewHolder(holder: RepositoryViewHolder, position: Int) {
-        holder.bind(repositories.get(position))
+        holder.bind(repositories[position])
+        holder.parentLayout.setOnClickListener {
+            val intent = Intent(context, DetailsActivity::class.java)
+            val repositoryFullName = repositories[position].full_name
+            intent.putExtra(R.string.repository_full_name.toString(), repositoryFullName)
+            context.startActivity(intent)
+        }
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int) {}
@@ -58,6 +66,9 @@ class RepositoryAdapter()
 }
 
 class RepositoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+    val parentLayout: ConstraintLayout = itemView.findViewById(R.id.parentLayoutId)
+
     private val descriptionField: TextView = itemView.findViewById(R.id.repositoryDescriptionId)
     private val nameField: TextView = itemView.findViewById(R.id.repositoryNameId)
     private val authorAvatar: ImageView = itemView.findViewById(R.id.authorAvatarId)
@@ -66,7 +77,7 @@ class RepositoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val starsField: TextView = itemView.findViewById(R.id.starsNumberId)
     private val languageField: TextView = itemView.findViewById(R.id.languageId)
 
-    fun bind (repository: Repository) {
+    fun bind(repository: Repository) {
         descriptionField.text = repository.description
         nameField.text = repository.name
         starsField.text = repository.starsNumber.toString()

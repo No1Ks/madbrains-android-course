@@ -6,9 +6,11 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
+import com.no1ks.madbrains_android_course.entity.Commit
 import com.no1ks.madbrains_android_course.entity.Repository
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlin.collections.HashMap
 
 object RepositoriesLoader {
     private const val mRepositoriesUrl = "https://api.github.com/repositories"
@@ -17,7 +19,7 @@ object RepositoriesLoader {
     var queueResult: String = "success"
     var numberOfRequestsQueued: Int = 0
 
-    val repositories: MutableList<Repository> = mutableListOf()
+    var repositories: MutableList<Repository> = mutableListOf()
 
     interface ResponseListener {
         fun onResponseReady()
@@ -36,11 +38,16 @@ object RepositoriesLoader {
             mRepositoriesUrl,
             Response.Listener { response ->
                 parseJsonRepositoriesList(response)
-                numberOfRequestsQueued = repositories.count()
+                numberOfRequestsQueued = repositories.count() * 2 //for each repository 2 additional requests
                 for (repository in repositories) {
                     loadRepositoryDetailsFromNetwork(
                         queue,
                         mRepositoriesDetailsUrl + repository.full_name,
+                        repository
+                    )
+                    loadRepositoryCommitsFromNetwork(
+                        queue,
+                        mRepositoriesDetailsUrl + repository.full_name + "/commits",
                         repository
                     )
                 }
@@ -58,7 +65,6 @@ object RepositoriesLoader {
         method: Int, url: String?, listener: Response.Listener<String?>?,
         errorListener: Response.ErrorListener?
     ) : StringRequest(method, url, listener, errorListener) {
-
         @Throws(AuthFailureError::class)
         override fun getHeaders(): Map<String, String> {
             val headers: MutableMap<String, String> = HashMap()
@@ -89,12 +95,47 @@ object RepositoriesLoader {
         queue.add(stringRequest)
     }
 
+    private fun loadRepositoryCommitsFromNetwork(queue: RequestQueue, url: String, repository: Repository) {
+        val stringRequest = StringRequestWithAuth(
+            Request.Method.GET,
+            url,
+            Response.Listener { response ->
+                val jsonArray = JSONArray(response)
+                val maxTen = if (jsonArray.length() > 10) 10 else jsonArray.length()
+                for (index in 0 until maxTen) {
+                    val jsonObject = jsonArray.getJSONObject(index)
+                    val commit = Commit()
+                    commit.message = jsonObject.getJSONObject("commit").getString("message")
+                    if (jsonObject.optJSONObject("author") != null) {
+                        val jsonAuthor = jsonObject.getJSONObject("author")
+                        commit.date = jsonObject
+                            .getJSONObject("commit")
+                            .getJSONObject("author")
+                            .getString("date")
+                            .replace("T", " ")
+                            .replace("Z", "")
+                            .replace("-", ".")
+                        commit.authorAvatarUrl = jsonAuthor.getString("avatar_url")
+                        commit.authorName = jsonAuthor.getString("login")
+                    }
+                    repository.commits.add(commit)
+                }
+                --numberOfRequestsQueued
+                mListener?.onResponseReady()
+            },
+            Response.ErrorListener { error ->
+                queueResult = error.toString().split('.').last()
+                mListener?.onResponseFailed()
+            }
+        )
+        queue.add(stringRequest)
+    }
+
     private fun parseJsonRepositoriesList(responseText: String?) {
         val jsonArray = JSONArray(responseText)
         for (index in 0 until jsonArray.length()) {
             val jsonObject = jsonArray.getJSONObject(index)
-            val repository =
-                Repository()
+            val repository = Repository()
             repository.id = jsonObject.getInt("id")
             repository.node_id = jsonObject.getString("node_id")
             repository.name = jsonObject.getString("name")
