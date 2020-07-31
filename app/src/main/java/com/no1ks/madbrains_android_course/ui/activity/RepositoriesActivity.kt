@@ -31,8 +31,7 @@ class RepositoriesActivity : AppCompatActivity(),
 
     private var mRepositoriesAdapter = RepositoryAdapter(this)
     private var mFavourireRepositoriesAdapter = RepositoryAdapter(this)
-
-    private lateinit var pullToRefresh: SwipeRefreshLayout
+    private lateinit var mPullToRefresh: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +40,7 @@ class RepositoriesActivity : AppCompatActivity(),
         RealmInterface.initRealm(this)
         RealmInterface.restoreFromDatabase()
 
+        RepositoriesLoader.setCustomListener(this)
         mRepositoriesAdapter.setCustomListener(this)
         mFavourireRepositoriesAdapter.setCustomListener(this)
 
@@ -55,11 +55,57 @@ class RepositoriesActivity : AppCompatActivity(),
     override fun onRestart() {
         super.onRestart()
         showRepositoriesList(RepositoriesLoader.repositories)
+        RepositoriesLoader.setCustomListener(this)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
+
+    override fun onResponseReady() {
+        if (RepositoriesLoader.numberOfRequestsQueued <= 0) {
+            showRepositoriesList(RepositoriesLoader.repositories)
+            mPullToRefresh.isRefreshing = false
+            setupActionBarLogout()
+        }
+    }
+
+    override fun onResponseFailed() {
+        Toast.makeText(this,
+            "Failed to download repositories: \n${RepositoriesLoader.queueResult}\n Only favourite available",
+            Toast.LENGTH_LONG).show()
+        showRepositoriesList(RepositoriesLoader.repositories)
+        RepositoriesLoader.repositories = RealmInterface.favouriteRepositoriesOf(LoggedUser.username).toMutableList()
+        mPullToRefresh.isRefreshing = false
+        setupActionBarLogout()
+    }
+
+    override fun onRepositoryFavourited(repo: Repository) {
+        mRepositoriesAdapter.repositories.removeAll { r -> r.full_name == repo.full_name }
+        mFavourireRepositoriesAdapter.repositories.add(repo)
+        RepositoriesLoader.repositories.find { r -> r.full_name == repo.full_name } ?.isFavourite  = true
+        RealmInterface.addRepositoryToFavourite(LoggedUser.username, repo)
+        sortRepositories()
+        mRepositoriesAdapter.notifyDataSetChanged()
+        mFavourireRepositoriesAdapter.notifyDataSetChanged()
+        RealmInterface.backupToDatabase()
+    }
+
+    override fun onRepositoryUnfavourited(repo: Repository) {
+        mFavourireRepositoriesAdapter.repositories.removeAll { r -> r.full_name == repo.full_name }
+        mRepositoriesAdapter.repositories.add(repo)
+        RepositoriesLoader.repositories.find { r -> r.full_name == repo.full_name } ?.isFavourite  = false
+        RealmInterface.removeRepositoryFromFavourite(LoggedUser.username, repo)
+        sortRepositories()
+        mRepositoriesAdapter.notifyDataSetChanged()
+        mFavourireRepositoriesAdapter.notifyDataSetChanged()
+        RealmInterface.backupToDatabase()
     }
 
     private fun setupPullToRefresh() {
-        pullToRefresh = findViewById(R.id.pullToRefresh)
-        pullToRefresh.setOnRefreshListener {
+        mPullToRefresh = findViewById(R.id.pull_to_refresh)
+        mPullToRefresh.setOnRefreshListener {
             loadRepositories()
         }
     }
@@ -99,16 +145,15 @@ class RepositoriesActivity : AppCompatActivity(),
         mFavourireRepositoriesAdapter.repositories.clear()
         mRepositoriesAdapter.notifyDataSetChanged()
         mFavourireRepositoriesAdapter.notifyDataSetChanged()
+        mPullToRefresh.isRefreshing = true
         val queue = Volley.newRequestQueue(this)
-        RepositoriesLoader.setCustomListener(this)
-        pullToRefresh.isRefreshing = true
         RepositoriesLoader.loadRepositoriesFromNetwork(queue)
     }
 
     private fun showRepositoriesList(repositories: MutableList<Repository>) {
         // all repositories
         mRepositoriesAdapter.repositories = repositories.toMutableList()
-        val recycler = findViewById<RecyclerView>(R.id.recyclerRepositoriesId)
+        val recycler = findViewById<RecyclerView>(R.id.rclr_repositories)
         recycler.adapter = mRepositoriesAdapter
         recycler.layoutManager = LinearLayoutManager(this)
         val callback: ItemTouchHelper.Callback =
@@ -121,7 +166,7 @@ class RepositoriesActivity : AppCompatActivity(),
 
         // favourite
         mFavourireRepositoriesAdapter.repositories.clear()
-        val recyclerFavourite = findViewById<RecyclerView>(R.id.recyclerFavouriteRepositoriesId)
+        val recyclerFavourite = findViewById<RecyclerView>(R.id.rclr_favourite_repositories)
         recyclerFavourite.adapter = mFavourireRepositoriesAdapter
         recyclerFavourite.layoutManager = LinearLayoutManager(this)
         val callbackFavourite: ItemTouchHelper.Callback =
@@ -147,50 +192,5 @@ class RepositoriesActivity : AppCompatActivity(),
     private fun sortRepositories() {
         mRepositoriesAdapter.repositories.sortBy { it.id }
         mFavourireRepositoriesAdapter.repositories.sortBy { it.id }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        finish()
-        return true
-    }
-
-    override fun onResponseReady() {
-        if (RepositoriesLoader.numberOfRequestsQueued <= 0) {
-            showRepositoriesList(RepositoriesLoader.repositories)
-            pullToRefresh.isRefreshing = false
-            setupActionBarLogout()
-        }
-    }
-
-    override fun onResponseFailed() {
-        Toast.makeText(this,
-            "Failed to download repositories: \n${RepositoriesLoader.queueResult}\n Only favourite available",
-            Toast.LENGTH_LONG).show()
-        showRepositoriesList(RepositoriesLoader.repositories)
-        RepositoriesLoader.repositories = RealmInterface.favouriteRepositoriesOf(LoggedUser.username).toMutableList()
-        pullToRefresh.isRefreshing = false
-        setupActionBarLogout()
-    }
-
-    override fun onRepositoryFavourited(repo: Repository) {
-        mRepositoriesAdapter.repositories.removeAll { r -> r.full_name == repo.full_name }
-        mFavourireRepositoriesAdapter.repositories.add(repo)
-        RepositoriesLoader.repositories.find { r -> r.full_name == repo.full_name } ?.isFavourite  = true
-        RealmInterface.addRepositoryToFavourite(LoggedUser.username, repo)
-        sortRepositories()
-        mRepositoriesAdapter.notifyDataSetChanged()
-        mFavourireRepositoriesAdapter.notifyDataSetChanged()
-        RealmInterface.backupToDatabase()
-    }
-
-    override fun onRepositoryUnfavourited(repo: Repository) {
-        mFavourireRepositoriesAdapter.repositories.removeAll { r -> r.full_name == repo.full_name }
-        mRepositoriesAdapter.repositories.add(repo)
-        RepositoriesLoader.repositories.find { r -> r.full_name == repo.full_name } ?.isFavourite  = false
-        RealmInterface.removeRepositoryFromFavourite(LoggedUser.username, repo)
-        sortRepositories()
-        mRepositoriesAdapter.notifyDataSetChanged()
-        mFavourireRepositoriesAdapter.notifyDataSetChanged()
-        RealmInterface.backupToDatabase()
     }
 }

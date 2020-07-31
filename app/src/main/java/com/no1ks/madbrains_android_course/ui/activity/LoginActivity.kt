@@ -14,17 +14,20 @@ import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var lastLogin: SharedPreferences
+    private val PREF_LOGIN = "PREF_LOGIN"
+    private val PREF_PASSW = "PREF_PASSW"
+
+    private lateinit var mLastLogin: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        findViewById<Button>(R.id.buttonEnterId).setOnClickListener {
+        findViewById<Button>(R.id.btn_enter).setOnClickListener {
             if (checkLogin()) {
-                LoggedUser.username = editTextNameId.text.toString()
-                LoggedUser.password = editTextPasswordId.text.toString()
-                val checkBoxRememberMe = findViewById<CheckBox>(R.id.checkBoxRememberId)
+                LoggedUser.username = et_name.text.toString()
+                LoggedUser.password = et_password.text.toString()
+                val checkBoxRememberMe = findViewById<CheckBox>(R.id.cb_remember)
                 if (checkBoxRememberMe.isChecked) {
                     saveLastLogin()
                 } else {
@@ -38,36 +41,33 @@ class LoginActivity : AppCompatActivity() {
         loadLastLogin()
     }
 
-    private val P_LOGIN = "P_LOGIN"
-    private val P_PASSW = "P_PASSW"
-
     private fun saveLastLogin() {
-        lastLogin = getPreferences(Context.MODE_PRIVATE)
-        val editor: SharedPreferences.Editor = lastLogin.edit()
-        editor.putString(P_LOGIN, LoggedUser.username)
-        editor.putString(P_PASSW, LoggedUser.password)
-        editor.commit()
+        mLastLogin = getPreferences(Context.MODE_PRIVATE)
+        val editor: SharedPreferences.Editor = mLastLogin.edit()
+        editor.putString(PREF_LOGIN, LoggedUser.username)
+        editor.putString(PREF_PASSW, LoggedUser.password)
+        editor.apply()
     }
 
     private fun clearLastLogin() {
-        editTextNameId.setText("")
-        editTextPasswordId.setText("")
-        lastLogin = getPreferences(Context.MODE_PRIVATE)
-        val editor: SharedPreferences.Editor = lastLogin.edit()
-        editor.putString(P_LOGIN, "")
-        editor.putString(P_PASSW, "")
-        editor.commit()
+        et_name.setText("")
+        et_password.setText("")
+        mLastLogin = getPreferences(Context.MODE_PRIVATE)
+        val editor: SharedPreferences.Editor = mLastLogin.edit()
+        editor.putString(PREF_LOGIN, "")
+        editor.putString(PREF_PASSW, "")
+        editor.apply()
     }
 
     private fun loadLastLogin() {
-        lastLogin = getPreferences(Context.MODE_PRIVATE)
-        editTextNameId.setText(lastLogin.getString(P_LOGIN, ""))
-        editTextPasswordId.setText(lastLogin.getString(P_PASSW, ""))
+        mLastLogin = getPreferences(Context.MODE_PRIVATE)
+        et_name.setText(mLastLogin.getString(PREF_LOGIN, ""))
+        et_password.setText(mLastLogin.getString(PREF_PASSW, ""))
     }
 
     private fun checkLogin(): Boolean {
-        val name: String = editTextNameId.text.toString()
-        val pass: String = editTextPasswordId.text.toString()
+        val name: String = et_name.text.toString()
+        val pass: String = et_password.text.toString()
         if (name.isNotEmpty() && pass.isNotEmpty()) {
             // in a perfect world I should check whether credentials are correct. but not today
             return true

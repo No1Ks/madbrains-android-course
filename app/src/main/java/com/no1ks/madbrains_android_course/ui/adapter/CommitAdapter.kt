@@ -24,9 +24,7 @@ class CommitAdapter(val context: Context)
         return CommitViewHolder(rootView)
     }
 
-    override fun getItemCount(): Int {
-        return commits.size
-    }
+    override fun getItemCount() = commits.size
 
     override fun onBindViewHolder(holder: CommitViewHolder, position: Int) {
         holder.bind(commits[position])
@@ -34,10 +32,10 @@ class CommitAdapter(val context: Context)
 }
 
 class CommitViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    private val dateField: TextView = itemView.findViewById(R.id.textViewCommitDateId)
-    private val messageField: TextView = itemView.findViewById(R.id.textViewCommitMessageId)
-    private val authorAvatar: ImageView = itemView.findViewById(R.id.authorAvatarId)
-    private val authorName: TextView = itemView.findViewById(R.id.authorNameId)
+    private val dateField: TextView = itemView.findViewById(R.id.tv_commit_date)
+    private val messageField: TextView = itemView.findViewById(R.id.tv_commit_message)
+    private val authorAvatar: ImageView = itemView.findViewById(R.id.img_author_avatar)
+    private val authorName: TextView = itemView.findViewById(R.id.tv_author_name)
 
     fun bind(commit: Commit) {
         dateField.text = commit.date

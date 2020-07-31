@@ -68,8 +68,7 @@ object RealmInterface {
 
     fun deleteAll() {
         val realm = Realm.getDefaultInstance()
-        val results: RealmResults<User> = realm.where(
-            User::class.java).findAll()
+        val results: RealmResults<User> = realm.where(User::class.java).findAll()
         realm.beginTransaction()
         results.deleteAllFromRealm()
         realm.commitTransaction()

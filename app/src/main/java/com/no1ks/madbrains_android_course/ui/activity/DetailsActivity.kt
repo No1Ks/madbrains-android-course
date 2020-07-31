@@ -6,8 +6,10 @@ import android.text.method.LinkMovementMethod
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.no1ks.madbrains_android_course.LoggedUser
@@ -17,7 +19,12 @@ import com.no1ks.madbrains_android_course.RepositoriesLoader
 import com.no1ks.madbrains_android_course.entity.Repository
 import com.no1ks.madbrains_android_course.ui.adapter.CommitAdapter
 
-class DetailsActivity : AppCompatActivity() {
+class DetailsActivity : AppCompatActivity(),
+    RepositoriesLoader.ResponseListener {
+
+    lateinit var repository: Repository
+
+    private var mCommitsAdapter = CommitAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,18 +33,45 @@ class DetailsActivity : AppCompatActivity() {
         setupActionBar()
         getIncomingIntent()
 
-        val favouriteButton = findViewById<Button>(R.id.buttonSwitchFavouriteId)
-        favouriteButton.text =
-            if (repository.isFavourite) getString(R.string.remove_from_favourite)
-            else getString(R.string.add_to_favourite)
+        RepositoriesLoader.setCustomListener(this)
+        val queue = Volley.newRequestQueue(this)
+        RepositoriesLoader.loadRepositoryCommitsFromNetwork(queue, repository)
 
+        val favouriteButton = findViewById<Button>(R.id.btn_switch_favourite)
         favouriteButton.setOnClickListener {
             switchFavourite()
         }
+
+        setButtonText()
     }
 
-    lateinit var repository: Repository
-    private var mCommitsAdapter = CommitAdapter(this)
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
+
+    override fun onResponseReady() {
+        if (RepositoriesLoader.numberOfRequestsQueued <= 0) {
+            mCommitsAdapter.commits = repository.commits.toMutableList()
+            mCommitsAdapter.notifyDataSetChanged()
+        }
+    }
+
+    override fun onResponseFailed() {
+        Toast.makeText(this,
+            "Failed to download commits: \n${RepositoriesLoader.queueResult}\n",
+            Toast.LENGTH_LONG).show()
+    }
+
+    private fun setButtonText() {
+        val favouriteButton = findViewById<Button>(R.id.btn_switch_favourite)
+        favouriteButton.text =
+            if (repository.isFavourite) {
+                getString(R.string.remove_from_favourite)
+            } else {
+                getString(R.string.add_to_favourite)
+            }
+    }
 
     private fun getIncomingIntent() {
         if (intent.hasExtra(R.string.repository_full_name.toString())) {
@@ -68,26 +102,18 @@ class DetailsActivity : AppCompatActivity() {
             RealmInterface.removeRepositoryFromFavourite(LoggedUser.username, repository)
         }
         RealmInterface.backupToDatabase()
-        val favouriteButton = findViewById<Button>(R.id.buttonSwitchFavouriteId)
-        favouriteButton.text =
-            if (repository.isFavourite) getString(R.string.remove_from_favourite)
-            else getString(R.string.add_to_favourite)
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        finish()
-        return true
+        setButtonText()
     }
 
     private fun show(repository: Repository) {
-        val descriptionField: TextView = findViewById(R.id.repositoryDescriptionId)
-        val nameField: TextView = findViewById(R.id.repositoryNameId)
-        val authorAvatar: ImageView = findViewById(R.id.authorAvatarId)
-        val authorName: TextView = findViewById(R.id.authorNameId)
-        val forksField: TextView = findViewById(R.id.forksNumberId)
-        val starsField: TextView = findViewById(R.id.starsNumberId)
-        val languageField: TextView = findViewById(R.id.languageId)
-        val urlField: TextView = findViewById(R.id.textViewUrlId)
+        val descriptionField: TextView = findViewById(R.id.tv_repository_description)
+        val nameField: TextView = findViewById(R.id.tv_repository_name)
+        val authorAvatar: ImageView = findViewById(R.id.img_author_avatar)
+        val authorName: TextView = findViewById(R.id.tv_author_name)
+        val forksField: TextView = findViewById(R.id.tv_forks_number)
+        val starsField: TextView = findViewById(R.id.tv_stars_number)
+        val languageField: TextView = findViewById(R.id.tv_language)
+        val urlField: TextView = findViewById(R.id.tv_url_field)
 
         descriptionField.text = repository.description
         nameField.text = repository.name
@@ -99,8 +125,7 @@ class DetailsActivity : AppCompatActivity() {
         urlField.text = repository.html_url
         urlField.movementMethod = LinkMovementMethod.getInstance()
 
-        mCommitsAdapter.commits = repository.commits.toMutableList()
-        val recycler = findViewById<RecyclerView>(R.id.recyclerCommitsId)
+        val recycler = findViewById<RecyclerView>(R.id.rclr_commits)
         recycler.adapter = mCommitsAdapter
         recycler.layoutManager = LinearLayoutManager(this)
     }

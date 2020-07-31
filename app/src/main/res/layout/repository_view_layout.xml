@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/parentLayoutId"
+    android:id="@+id/lay_parent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/recycle_view_border"
@@ -10,26 +10,26 @@
     android:padding="10dp">
 
     <LinearLayout
-        android:id="@+id/repositoryInfoLayout"
+        android:id="@+id/lay_repository_info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingBottom="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/authorInfoLayout"
+        app:layout_constraintBottom_toTopOf="@+id/lay_author_info"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
         <TextView
-            android:id="@+id/repositoryNameId"
+            android:id="@+id/tv_repository_name"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-black"
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/repositoryDescriptionId"
+            android:id="@+id/tv_repository_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -40,17 +40,17 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/repositoryStatsLayout"
+        android:id="@+id/lay_repository_stats"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="start|center_vertical"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="@+id/authorInfoLayout"
+        app:layout_constraintBottom_toBottomOf="@+id/lay_author_info"
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
-            android:id="@+id/imageForks"
+            android:id="@+id/img_forks"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_weight="1"
@@ -59,7 +59,7 @@
             tools:ignore="ContentDescription" />
 
         <TextView
-            android:id="@+id/forksNumberId"
+            android:id="@+id/tv_forks_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -71,7 +71,7 @@
             android:layout_weight="1" />
 
         <ImageView
-            android:id="@+id/imageStars"
+            android:id="@+id/img_stars"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_weight="1"
@@ -79,7 +79,7 @@
             tools:ignore="ContentDescription" />
 
         <TextView
-            android:id="@+id/starsNumberId"
+            android:id="@+id/tv_stars_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -88,7 +88,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/authorInfoLayout"
+        android:id="@+id/lay_author_info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="1dp"
@@ -103,7 +103,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
-            android:id="@+id/authorNameId"
+            android:id="@+id/tv_author_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -111,7 +111,7 @@
             android:gravity="end" />
 
         <ImageView
-            android:id="@+id/authorAvatarId"
+            android:id="@+id/img_author_avatar"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:visibility="visible"
@@ -121,13 +121,13 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/languageId"
+        android:id="@+id/tv_language"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="6dp"
-        app:layout_constraintBottom_toTopOf="@+id/repositoryStatsLayout"
+        app:layout_constraintBottom_toTopOf="@+id/lay_repository_stats"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/repositoryInfoLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/lay_repository_info" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

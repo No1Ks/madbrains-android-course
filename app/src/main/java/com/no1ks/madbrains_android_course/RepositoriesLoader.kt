@@ -13,18 +13,14 @@ import org.json.JSONObject
 import kotlin.collections.HashMap
 
 object RepositoriesLoader {
-    private const val mRepositoriesUrl = "https://api.github.com/repositories"
-    private const val mRepositoriesDetailsUrl = "https://api.github.com/repos/"
 
     var queueResult: String = "success"
     var numberOfRequestsQueued: Int = 0
-
     var repositories: MutableList<Repository> = mutableListOf()
 
-    interface ResponseListener {
-        fun onResponseReady()
-        fun onResponseFailed()
-    }
+    private const val REPOSITORIES_URL = "https://api.github.com/repositories"
+    private const val REPOSITORIES_DETAILS_URL = "https://api.github.com/repos/"
+
     private var mListener: ResponseListener? = null
 
     fun setCustomListener(listener: ResponseListener?) {
@@ -35,19 +31,14 @@ object RepositoriesLoader {
         repositories.clear()
         val stringRequest = StringRequestWithAuth(
             Request.Method.GET,
-            mRepositoriesUrl,
+            REPOSITORIES_URL,
             Response.Listener { response ->
                 parseJsonRepositoriesList(response)
-                numberOfRequestsQueued = repositories.count() * 2 //for each repository 2 additional requests
+                numberOfRequestsQueued = repositories.count()
                 for (repository in repositories) {
                     loadRepositoryDetailsFromNetwork(
                         queue,
-                        mRepositoriesDetailsUrl + repository.full_name,
-                        repository
-                    )
-                    loadRepositoryCommitsFromNetwork(
-                        queue,
-                        mRepositoriesDetailsUrl + repository.full_name + "/commits",
+                        REPOSITORIES_DETAILS_URL + repository.full_name,
                         repository
                     )
                 }
@@ -61,44 +52,10 @@ object RepositoriesLoader {
         queue.add(stringRequest)
     }
 
-    class StringRequestWithAuth(
-        method: Int, url: String?, listener: Response.Listener<String?>?,
-        errorListener: Response.ErrorListener?
-    ) : StringRequest(method, url, listener, errorListener) {
-        @Throws(AuthFailureError::class)
-        override fun getHeaders(): Map<String, String> {
-            val headers: MutableMap<String, String> = HashMap()
-            val credentials = "${LoggedUser.username}:${LoggedUser.password}"
-            val auth = ("Basic " + Base64.encodeToString(credentials.toByteArray(), Base64.NO_WRAP))
-            headers["Authorization"] = auth
-            return headers
-        }
-    }
-
-    private fun loadRepositoryDetailsFromNetwork(queue: RequestQueue, url: String, repository: Repository) {
+    fun loadRepositoryCommitsFromNetwork(queue: RequestQueue, repository: Repository) {
         val stringRequest = StringRequestWithAuth(
             Request.Method.GET,
-            url,
-            Response.Listener { response ->
-                val jsonObject = JSONObject(response)
-                repository.forksNumber = jsonObject.getInt("forks")
-                repository.language = jsonObject.getString("language")
-                repository.starsNumber = jsonObject.getInt("stargazers_count")
-                --numberOfRequestsQueued
-                mListener?.onResponseReady()
-            },
-            Response.ErrorListener { error ->
-                queueResult = error.toString().split('.').last()
-                mListener?.onResponseFailed()
-            }
-        )
-        queue.add(stringRequest)
-    }
-
-    private fun loadRepositoryCommitsFromNetwork(queue: RequestQueue, url: String, repository: Repository) {
-        val stringRequest = StringRequestWithAuth(
-            Request.Method.GET,
-            url,
+            REPOSITORIES_DETAILS_URL + repository.full_name + "/commits",
             Response.Listener { response ->
                 val jsonArray = JSONArray(response)
                 val maxTen = if (jsonArray.length() > 10) 10 else jsonArray.length()
@@ -120,6 +77,27 @@ object RepositoriesLoader {
                     }
                     repository.commits.add(commit)
                 }
+                --numberOfRequestsQueued
+                mListener?.onResponseReady()
+            },
+            Response.ErrorListener { error ->
+                queueResult = error.toString().split('.').last()
+                mListener?.onResponseFailed()
+            }
+        )
+        queue.add(stringRequest)
+        ++numberOfRequestsQueued
+    }
+
+    private fun loadRepositoryDetailsFromNetwork(queue: RequestQueue, url: String, repository: Repository) {
+        val stringRequest = StringRequestWithAuth(
+            Request.Method.GET,
+            url,
+            Response.Listener { response ->
+                val jsonObject = JSONObject(response)
+                repository.forksNumber = jsonObject.getInt("forks")
+                repository.language = jsonObject.getString("language")
+                repository.starsNumber = jsonObject.getInt("stargazers_count")
                 --numberOfRequestsQueued
                 mListener?.onResponseReady()
             },
@@ -220,6 +198,25 @@ object RepositoriesLoader {
             repository.releases_url = jsonObject.getString("releases_url")
             repository.deployments_url = jsonObject.getString("deployments_url")
             repositories.add(repository)
+        }
+    }
+
+    interface ResponseListener {
+        fun onResponseReady()
+        fun onResponseFailed()
+    }
+
+    class StringRequestWithAuth(
+        method: Int, url: String?, listener: Response.Listener<String?>?,
+        errorListener: Response.ErrorListener?
+    ) : StringRequest(method, url, listener, errorListener) {
+        @Throws(AuthFailureError::class)
+        override fun getHeaders(): Map<String, String> {
+            val headers: MutableMap<String, String> = HashMap()
+            val credentials = "${LoggedUser.username}:${LoggedUser.password}"
+            val auth = ("Basic " + Base64.encodeToString(credentials.toByteArray(), Base64.NO_WRAP))
+            headers["Authorization"] = auth
+            return headers
         }
     }
 }

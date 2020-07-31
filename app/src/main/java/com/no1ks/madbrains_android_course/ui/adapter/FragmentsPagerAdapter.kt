@@ -13,14 +13,11 @@ class FragmentsPagerAdapter(
 ) : FragmentStateAdapter(fragmentManager, lifecycle) {
 
     override fun createFragment(position: Int): Fragment {
-        var fragment = Fragment()
-        when (position) {
-            0 -> fragment =
-                RepositoriesFragment()
-            1 -> fragment =
-                FavouriteFragment()
+        return when (position) {
+            0 -> RepositoriesFragment()
+            1 -> FavouriteFragment()
+            else -> Fragment()
         }
-        return fragment
     }
 
     override fun getItemCount(): Int = 2

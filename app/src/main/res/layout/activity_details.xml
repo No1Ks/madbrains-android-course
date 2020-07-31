@@ -2,13 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/lay_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.activity.DetailsActivity">
 
 
     <Button
-        android:id="@+id/buttonSwitchFavouriteId"
+        android:id="@+id/btn_switch_favourite"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -17,10 +18,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerCommitsId" />
+        app:layout_constraintTop_toBottomOf="@+id/rclr_commits" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/repositoryInfoLayoutId"
+        android:id="@+id/lay_repository"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="1dp"
@@ -33,26 +34,26 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:id="@+id/repositoryInfoLayout"
+            android:id="@+id/lay_repository_info"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingBottom="10dp"
-            app:layout_constraintBottom_toTopOf="@+id/authorInfoLayout"
+            app:layout_constraintBottom_toTopOf="@+id/lay_author_info"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0">
 
             <TextView
-                android:id="@+id/repositoryNameId"
+                android:id="@+id/tv_repository_name"
                 android:layout_width="130dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-black"
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/repositoryDescriptionId"
+                android:id="@+id/tv_repository_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -63,17 +64,17 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/repositoryStatsLayout"
+            android:id="@+id/lay_repository_stats"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="start|center_vertical"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="@+id/authorInfoLayout"
+            app:layout_constraintBottom_toBottomOf="@+id/lay_author_info"
             app:layout_constraintStart_toStartOf="parent">
 
             <ImageView
-                android:id="@+id/imageForks"
+                android:id="@+id/img_forks"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_weight="1"
@@ -82,7 +83,7 @@
                 tools:ignore="ContentDescription" />
 
             <TextView
-                android:id="@+id/forksNumberId"
+                android:id="@+id/tv_forks_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -94,7 +95,7 @@
                 android:layout_weight="1" />
 
             <ImageView
-                android:id="@+id/imageStars"
+                android:id="@+id/img_stars"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_weight="1"
@@ -102,7 +103,7 @@
                 tools:ignore="ContentDescription" />
 
             <TextView
-                android:id="@+id/starsNumberId"
+                android:id="@+id/tv_stars_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -111,7 +112,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/authorInfoLayout"
+            android:id="@+id/lay_author_info"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="1dp"
@@ -126,7 +127,7 @@
             app:layout_constraintEnd_toEndOf="parent">
 
             <TextView
-                android:id="@+id/authorNameId"
+                android:id="@+id/tv_author_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -134,7 +135,7 @@
                 android:gravity="end" />
 
             <ImageView
-                android:id="@+id/authorAvatarId"
+                android:id="@+id/img_author_avatar"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:visibility="visible"
@@ -144,57 +145,57 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/languageId"
+            android:id="@+id/tv_language"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="6dp"
-            app:layout_constraintBottom_toTopOf="@+id/repositoryStatsLayout"
+            app:layout_constraintBottom_toTopOf="@+id/lay_repository_stats"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/repositoryInfoLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/lay_repository_info" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerCommitsId"
+        android:id="@+id/rclr_commits"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonSwitchFavouriteId"
+        app:layout_constraintBottom_toTopOf="@+id/btn_switch_favourite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_last_commits" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tv_last_commits"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"
         android:padding="5dp"
         android:text="@string/last_ten_commits"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_url" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/tv_url"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"
         android:padding="5dp"
         android:text="@string/url"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/repositoryInfoLayoutId" />
+        app:layout_constraintTop_toBottomOf="@+id/lay_repository" />
 
     <TextView
-        android:id="@+id/textViewUrlId"
+        android:id="@+id/tv_url_field"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="5dp"
         android:autoLink="web"
-        app:layout_constraintStart_toEndOf="@+id/textView5"
-        app:layout_constraintTop_toBottomOf="@+id/repositoryInfoLayoutId" />
+        android:padding="5dp"
+        app:layout_constraintStart_toEndOf="@+id/tv_url"
+        app:layout_constraintTop_toBottomOf="@+id/lay_repository" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
